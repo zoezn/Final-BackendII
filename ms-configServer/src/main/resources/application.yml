@@ -8,8 +8,8 @@ spring:
     config:
       server:
         git:
-          uri: https://github.com/zoezn/backendII-parcial
-          default-label: develop
+          uri: https://github.com/zoezn/Final-BackendII
+          default-label: main
           force-pull: true
           search-paths: configData
 

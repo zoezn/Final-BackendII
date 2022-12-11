@@ -12,9 +12,6 @@ spring:
     baseUrl: http://localhost:9411/
   data:
     mongodb:
-      username: usr-series
-      password: pwd-series
-      database: seriesdevmongo
       port: 27017
       host: localhost
 

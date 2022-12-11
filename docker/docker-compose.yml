@@ -30,3 +30,28 @@ services:
       - 27017
     volumes:
       - ./mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
+  zipkin-contenedor:
+    image: openzipkin/zipkin-slim
+    container_name: zipkin-contenedor
+    environment:
+      - STORAGE_TYPE=mem
+    ports:
+      - 9411:9411
+    expose:
+      - 9411
+    depends_on:
+      - storage-contenedor
+  storage-contenedor:
+    image: busybox:1.31.0
+    container_name: storage-contenedor
+
+  rabbitmq-contenedor:
+    image: rabbitmq:3-management
+    container_name: rabbitmq-contenedor
+    hostname: rabbitmq
+    ports:
+      - 5672:5672
+      - 15672:15672
+    expose:
+      - 15672
+      - 5672

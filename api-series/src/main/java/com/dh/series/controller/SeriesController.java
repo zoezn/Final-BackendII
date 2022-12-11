@@ -1,6 +1,6 @@
 package com.dh.series.controller;
 
-import com.dh.series.model.Movie;
+
 import com.dh.series.model.Series;
 import com.dh.series.service.SeriesService;
 import org.springframework.http.ResponseEntity;
@@ -11,7 +11,6 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/v1/series")
 public class SeriesController {
-
 
     private final SeriesService seriesService;
 

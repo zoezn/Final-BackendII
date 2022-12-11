@@ -6,11 +6,9 @@ import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import java.io.Serial;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -19,15 +17,16 @@ import java.util.List;
 @Document
 public class Series implements Serializable {
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
     @Id
-    private Long id;
+    private String id;
 
     private String name;
 
     private String genre;
 
-    private List<Season> seasons;
+    private List<Season> seasons= new ArrayList<>();
 
 }

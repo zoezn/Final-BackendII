@@ -1,15 +1,22 @@
 package com.dh.series.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import org.springframework.data.annotation.Id;
 
 
+import java.io.Serial;
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 
+@AllArgsConstructor
+@NoArgsConstructor
+@Getter
+@Setter
 public class Season implements Serializable {
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
 
@@ -17,8 +24,9 @@ public class Season implements Serializable {
 
     private String name;
 
-    private Integer number;
+    private Integer seasonNumber;
 
-    private String urlStream;
+    private List<Chapter> chapters= new ArrayList<>();
+
 
 }

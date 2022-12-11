@@ -8,7 +8,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface SeriesRepository extends MongoRepository<Series, Long> {
+public interface SeriesRepository extends MongoRepository<Series, String> {
 
 
     List<Series> findByGenre(String genre);

@@ -1,5 +1,6 @@
-package com.dh.series.model;
+package com.dh.catalog.model;
 
+import com.dh.catalog.client.SeriesServiceClient;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -8,22 +9,24 @@ import org.springframework.data.annotation.Id;
 
 import java.io.Serial;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
-public class Chapter implements Serializable {
+public class SeriesEntity implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
 
-    private Long id;
+    @Id
+    private String id;
 
     private String name;
 
-    private Integer number;
+    private String genre;
 
-    private String urlStream;
+    private List<SeasonEntity> seasons = new ArrayList<>();
 
 }

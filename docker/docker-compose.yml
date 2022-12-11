@@ -22,8 +22,8 @@ services:
     restart: always
     environment:
       MONGO_INITDB_DATABASE: 'seriesdevmongo'
-      MONGO_INITDB_ROOT_USERNAME: 'usr-series'
-      MONGO_INITDB_ROOT_PASSWORD: 'pwd-series'
+      MONGO_INITDB_ROOT_USERNAME: 
+      MONGO_INITDB_ROOT_PASSWORD: 
     ports:
       - 27017:27017
     expose:

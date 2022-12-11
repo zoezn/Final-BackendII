@@ -1,23 +1,25 @@
-package com.dh.series.model;
+package com.dh.catalog.model.dto;
 
-import lombok.*;
-import org.springframework.data.annotation.Id;
-
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.List;
 
+import java.util.List;
 
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
-public class Season implements Serializable {
+public class SeasonDTO implements Serializable {
 
     @Serial
     private static final long serialVersionUID = 1L;
+
 
     private Long id;
 
@@ -25,7 +27,6 @@ public class Season implements Serializable {
 
     private Integer seasonNumber;
 
-    private List<Chapter> chapters= new ArrayList<>();
-
+    private List<ChapterDTO> chapters = new ArrayList<>();
 
 }

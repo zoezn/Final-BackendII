@@ -15,15 +15,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 @FeignClient(name="api-series")
-public interface SeriesServiceCliente {
+public interface SeriesServiceClient {
 
-    @GetMapping("/api/v1/movies/{genre}")
-    List<MovieServiceClient.MovieDto> getMovieByGenre(@PathVariable(value = "genre") String genre);
+    @GetMapping("/api/v1/series/{genre}")
+    List<SeriesEntity> getSeriesByGenre(@PathVariable(value = "genre") String genre);
 
 
     @Getter
     @Setter
-    class SerieDto{
+    class SeriesEntity implements Serializable{
         @Serial
         private static final long serialVersionUID = 1L;
 
@@ -52,13 +52,13 @@ public interface SeriesServiceCliente {
 
             private Integer seasonNumber;
 
-            private List<Chapter> chapters= new ArrayList<>();
+            private List<ChapterDTO> chapters= new ArrayList<>();
 
             @AllArgsConstructor
             @NoArgsConstructor
             @Getter
             @Setter
-            public class Chapter implements Serializable {
+            public class ChapterDTO implements Serializable {
                 @Serial
                 private static final long serialVersionUID = 1L;
 

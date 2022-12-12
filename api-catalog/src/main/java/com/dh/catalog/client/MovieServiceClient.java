@@ -1,5 +1,6 @@
 package com.dh.catalog.client;
 
+import com.dh.catalog.model.dto.MovieDTO;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.cloud.openfeign.FeignClient;
@@ -12,19 +13,9 @@ import java.util.List;
 public interface MovieServiceClient {
 
 	@GetMapping("/api/v1/movies/{genre}")
-	List<MovieDto> getMovieByGenre(@PathVariable (value = "genre") String genre);
+	List<MovieDTO> getMovieByGenre(@PathVariable (value = "genre") String genre);
 
 
-	@Getter
-	@Setter
-	class MovieDto{
-		private Long id;
 
-		private String name;
-
-		private String genre;
-
-		private String urlStream;
-	}
 
 }

@@ -13,7 +13,9 @@ import com.dh.catalog.repository.MovieEntityRepository;
 import com.dh.catalog.repository.SeriesEntityRepository;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.beans.BeanUtils;
+import org.springframework.stereotype.Component;
 
+@Component
 public class NewMovieEventConsumer {
 
     private final MovieEntityRepository movieEntityRepository;
@@ -26,8 +28,7 @@ public class NewMovieEventConsumer {
     public void execute(MovieDTO movieDTO) {
         MovieEntity movieNew = new MovieEntity();
         BeanUtils.copyProperties(movieDTO, movieNew);
-
-        movieEntityRepository.deleteById(movieNew.getId());
+        movieEntityRepository.deleteById(movieDTO.getId());
         movieEntityRepository.save(movieNew);
     }
 

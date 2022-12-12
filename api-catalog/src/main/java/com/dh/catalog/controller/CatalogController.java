@@ -2,6 +2,8 @@ package com.dh.catalog.controller;
 
 import com.dh.catalog.client.MovieServiceClient;
 import com.dh.catalog.client.SeriesServiceClient;
+import com.dh.catalog.model.dto.MovieDTO;
+import com.dh.catalog.service.CatalogService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -14,22 +16,19 @@ import java.util.List;
 @RequestMapping("/api/v1/catalog")
 public class CatalogController {
 
-	private final MovieServiceClient movieServiceClient;
+	private final CatalogService catalogService;
 
-	private final SeriesServiceClient seriesServiceClient;
-
-	public CatalogController(MovieServiceClient movieServiceClient, SeriesServiceClient seriesServiceClient) {
-		this.movieServiceClient = movieServiceClient;
-		this.seriesServiceClient = seriesServiceClient;
+	public CatalogController(CatalogService catalogService) {
+		this.catalogService = catalogService;
 	}
 
-	@GetMapping("/movie/{genre}")
-	ResponseEntity<List<MovieServiceClient.MovieDto>> getMovieGenre(@PathVariable String genre) {
-		return ResponseEntity.ok(movieServiceClient.getMovieByGenre(genre));
+	@GetMapping("/online/{genre}")
+	ResponseEntity<GetByGenreResponse> getOnlineGenre(@PathVariable String genre) {
+		return ResponseEntity.ok(catalogService.getByGenreOnline(genre));
 	}
-	@GetMapping("/series/{genre}")
-	ResponseEntity<List<SeriesServiceClient.SeriesEntity>> getSeriesGenre(@PathVariable String genre) {
-		return ResponseEntity.ok(seriesServiceClient.getSeriesByGenre(genre));
+	@GetMapping("/offline/{genre}")
+	ResponseEntity<GetByGenreResponse> getOfflineGenre(@PathVariable String genre) {
+		return ResponseEntity.ok(catalogService.getByGenreOffline(genre));
 	}
 
 }

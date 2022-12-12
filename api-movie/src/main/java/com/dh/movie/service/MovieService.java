@@ -25,7 +25,9 @@ public class MovieService {
     }
 
     public Movie save(Movie movie) {
-        newMovieEventProducer.execute(movie);
-        return movieRepository.save(movie);
+        Movie savedMovie = new Movie();
+        savedMovie = movieRepository.save(movie);
+        newMovieEventProducer.execute(savedMovie);
+        return savedMovie;
     }
 }

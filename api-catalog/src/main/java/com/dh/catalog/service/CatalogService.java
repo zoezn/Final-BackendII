@@ -13,6 +13,8 @@ import com.dh.catalog.model.dto.SeasonDTO;
 import com.dh.catalog.model.dto.SeriesDTO;
 import com.dh.catalog.repository.MovieEntityRepository;
 import com.dh.catalog.repository.SeriesEntityRepository;
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
+import io.github.resilience4j.retry.annotation.Retry;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
@@ -45,23 +47,64 @@ public class CatalogService {
         return getByGenreResponse;
     }
 
-//    @Retry(name = "retryMusic")
-//    @CircuitBreaker(name = "clientMusic", fallbackMethod = "findAllPlaylistFallBack")
+    @Retry(name = "retryMovie")
+    @CircuitBreaker(name = "clientMovie", fallbackMethod = "findAllMoviesByGenreFallBack")
     private void findAllMoviesByGenre(String genre, GetByGenreResponse response) {
         response.setMovies(movieServiceClient.getMovieByGenre(genre));
     }
+    private void findAllMoviesByGenreFallBack(String genre, GetByGenreResponse response, Throwable t) {
+        GetByGenreResponse getByGenreResponse = new GetByGenreResponse();
+        List<MovieDTO> movies = new ArrayList<>();
+        MovieDTO movieDTO = new MovieDTO();
+//
+        for (MovieEntity m: movieEntityRepository.findByGenre(genre)
+        ) {
+            BeanUtils.copyProperties(m, movieDTO);
+            movies.add(movieDTO);
+        }
+
+        response.setMovies(movies);
+    }
+
+    @Retry(name = "retrySeries")
+    @CircuitBreaker(name = "clientSeries", fallbackMethod = "findAllSeriesByGenreFallBack")
     private void findAllSeriesByGenre(String genre, GetByGenreResponse response) {
         response.setSeries(seriesServiceClient.getSeriesByGenre(genre));
+    }
+
+    private void findAllSeriesByGenreFallBack(String genre, GetByGenreResponse response, Throwable t) {
+        List<SeriesDTO> series = new ArrayList<>();
+        SeriesDTO seriesDTO = new SeriesDTO();
+
+        for (SeriesEntity s : seriesEntityRepository.findByGenre(genre)){
+
+            for (SeasonEntity s2 :
+                    s.getSeasons()) {
+                SeasonDTO sDTO = new SeasonDTO();
+
+                for (ChapterEntity c :
+                        s2.getChapters()) {
+                    ChapterDTO cDTO = new ChapterDTO();
+                    BeanUtils.copyProperties(c, cDTO);
+                    sDTO.getChapters().add(cDTO);
+                }
+                BeanUtils.copyProperties(s2, sDTO);
+                seriesDTO.getSeasons().add(sDTO);
+            }
+            BeanUtils.copyProperties(s, seriesDTO);
+            series.add(seriesDTO);
+        }
+
+        response.setSeries(series);
     }
 
     public GetByGenreResponse getByGenreOffline(String genre){
         GetByGenreResponse getByGenreResponse = new GetByGenreResponse();
         List<MovieDTO> movies = new ArrayList<>();
         List<SeriesDTO> series = new ArrayList<>();
-//
-//
+
         MovieDTO movieDTO = new MovieDTO();
-//
+
         for (MovieEntity m: movieEntityRepository.findByGenre(genre)
              ) {
             BeanUtils.copyProperties(m, movieDTO);

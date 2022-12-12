@@ -48,9 +48,6 @@ resilience4j.retry:
       waitDuration: 10s
       enableExponentialBackoff: true
       exponentialBackoffMultiplier: 2
-      retryExceptions:
-        - org.springframework.web.client.HttpServerErrorException
-        - java.io.IOException
   
 
 

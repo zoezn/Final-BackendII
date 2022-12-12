@@ -35,8 +35,8 @@ public class CatalogService {
         this.seriesServiceClient = seriesServiceClient;
     }
 
-//    public List<SeriesEntity> findSeriesByGenre(String genre){ return  seriesEntityRepository.findByGenre(genre);};
-//    public List<MovieEntity> findMovieByGenre(String genre){ return  movieEntityRepository.findByGenre(genre);};
+    public List<SeriesEntity> findSeriesByGenre(String genre){ return  seriesEntityRepository.findByGenre(genre);};
+    public List<MovieEntity> findMovieByGenre(String genre){ return  movieEntityRepository.findByGenre(genre);};
 
     public GetByGenreResponse getByGenreOnline(String genre){
         GetByGenreResponse getByGenreResponse = new GetByGenreResponse();
@@ -58,38 +58,37 @@ public class CatalogService {
         GetByGenreResponse getByGenreResponse = new GetByGenreResponse();
         List<MovieDTO> movies = new ArrayList<>();
         List<SeriesDTO> series = new ArrayList<>();
-
-
+//
+//
         MovieDTO movieDTO = new MovieDTO();
-
+//
         for (MovieEntity m: movieEntityRepository.findByGenre(genre)
              ) {
             BeanUtils.copyProperties(m, movieDTO);
             movies.add(movieDTO);
-            System.out.println(movies);
         }
-
+        SeriesDTO seriesDTO = new SeriesDTO();
         for (SeriesEntity s : seriesEntityRepository.findByGenre(genre)){
-            SeriesDTO seriesDTO = new SeriesDTO();
-            BeanUtils.copyProperties(s, seriesDTO);
+
             for (SeasonEntity s2 :
                     s.getSeasons()) {
                 SeasonDTO sDTO = new SeasonDTO();
-                BeanUtils.copyProperties(s2, sDTO);
+
                 for (ChapterEntity c :
                         s2.getChapters()) {
                     ChapterDTO cDTO = new ChapterDTO();
                     BeanUtils.copyProperties(c, cDTO);
                     sDTO.getChapters().add(cDTO);
                 }
-
+                BeanUtils.copyProperties(s2, sDTO);
                 seriesDTO.getSeasons().add(sDTO);
             }
+            BeanUtils.copyProperties(s, seriesDTO);
             series.add(seriesDTO);
-            System.out.println(series);
         }
 
-
+        getByGenreResponse.setMovies(movies);
+        getByGenreResponse.setSeries(series);
         return getByGenreResponse;
 
     }

@@ -27,15 +27,7 @@ eureka:
 
 resilience4j.retry:
   instances:
-    retryMovie:
-      maxAttempts: 3
-      waitDuration: 10s
-      enableExponentialBackoff: true
-      exponentialBackoffMultiplier: 2
-      retryExceptions:
-        - org.springframework.web.client.HttpServerErrorException
-        - java.io.IOException
-    retrySeries:
+    retryCatalog:
       maxAttempts: 3
       waitDuration: 10s
       enableExponentialBackoff: true
@@ -46,16 +38,7 @@ resilience4j.retry:
 
 resilience4j.circuitbreaker:
   instances:
-    clientMovie:
-      registerHealthIndicator: true
-      slidingWindowSize: 10
-      permittedNumberOfCallsInHalfOpenState: 3
-      slidingWindowType: TIME_BASED
-      minimumNumberOfCalls: 20
-      waitDurationInOpenState: 50s
-      failureRateThreshold: 50
-      eventConsumerBufferSize: 10
-    clientSeries:
+    clientCatalog:
       registerHealthIndicator: true
       slidingWindowSize: 10
       permittedNumberOfCallsInHalfOpenState: 3

@@ -5,9 +5,9 @@ services:
     restart: always
     environment:
       MYSQL_DATABASE: 'movie-dev'
-      MYSQL_USER: 'usr-movie'
-      MYSQL_PASSWORD: 'pwd-movie'
-      MYSQL_ROOT_PASSWORD: 'password'
+      MYSQL_USER: 'root'
+      MYSQL_PASSWORD: '1234'
+      MYSQL_ROOT_PASSWORD: '1234'
     ports:
       # <Port exposed> : < MySQL Port running inside container>
       - '3306:3306'

@@ -2,6 +2,7 @@ package com.dh.movie.event;
 
 import com.dh.movie.config.RabbitMQConfig;
 import com.dh.movie.model.Movie;
+import com.dh.movie.model.dto.MovieDTO;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -27,41 +28,9 @@ public class NewMovieEventProducer {
 
 
     public void execute(Movie movieNew) {
-        NewMovieEventProducer.Data data= new NewMovieEventProducer.Data();
-        BeanUtils.copyProperties(movieNew,data.getMovie());
-        rabbitTemplate.convertAndSend(RabbitMQConfig.EXCHANGE_NAME, RabbitMQConfig.TOPIC_NEW_MUSIC, data);
+        MovieDTO movieDTO= new MovieDTO();
+        BeanUtils.copyProperties(movieNew, movieDTO);
+        rabbitTemplate.convertAndSend(RabbitMQConfig.EXCHANGE_NAME, RabbitMQConfig.TOPIC_NEW_MOVIE, movieDTO);
     }
 
-    @Getter
-    @Setter
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public static class Data implements Serializable {
-
-        @Serial
-        private static final long serialVersionUID = 1L;
-        private Data.MovieDTO movie= new Data.MovieDTO();
-
-
-        @lombok.Data
-        @AllArgsConstructor
-        @NoArgsConstructor
-        @Entity
-        public class MovieDTO implements Serializable {
-
-            private static final long serialVersionUID = 1L;
-
-            @Id
-            @GeneratedValue(strategy = GenerationType.IDENTITY)
-            private Long id;
-
-            private String name;
-
-            private String genre;
-
-            private String urlStream;
-
-        }
-
-    }
 }

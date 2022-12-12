@@ -1,4 +1,5 @@
-package com.dh.catalog.model;
+package com.dh.movie.model.dto;
+
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -14,7 +15,7 @@ import java.io.Serializable;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-public class MovieEntity implements Serializable {
+public class MovieDTO implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -29,3 +30,4 @@ public class MovieEntity implements Serializable {
     private String urlStream;
 
 }
+

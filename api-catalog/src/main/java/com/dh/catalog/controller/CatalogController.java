@@ -4,15 +4,14 @@ import com.dh.catalog.client.MovieServiceClient;
 import com.dh.catalog.client.SeriesServiceClient;
 import com.dh.catalog.model.dto.MovieDTO;
 import com.dh.catalog.service.CatalogService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@RestController
+@Controller
 @RequestMapping("/api/v1/catalog")
 public class CatalogController {
 
@@ -23,11 +22,13 @@ public class CatalogController {
 	}
 
 	@GetMapping("/online/{genre}")
-	ResponseEntity<GetByGenreResponse> getOnlineGenre(@PathVariable String genre) {
+	@ResponseStatus(code = HttpStatus.OK)
+	public ResponseEntity<GetByGenreResponse> getOnlineGenre(@PathVariable String genre) {
 		return ResponseEntity.ok(catalogService.getByGenreOnline(genre));
 	}
 	@GetMapping("/offline/{genre}")
-	ResponseEntity<GetByGenreResponse> getOfflineGenre(@PathVariable String genre) {
+	@ResponseStatus(code = HttpStatus.OK)
+	public ResponseEntity<GetByGenreResponse> getOfflineGenre(@PathVariable String genre) {
 		return ResponseEntity.ok(catalogService.getByGenreOffline(genre));
 	}
 

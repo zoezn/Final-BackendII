@@ -37,9 +37,16 @@ public class CatalogService {
         this.seriesServiceClient = seriesServiceClient;
     }
 
-    public List<SeriesEntity> findSeriesByGenre(String genre){ return  seriesEntityRepository.findByGenre(genre);};
-    public List<MovieEntity> findMovieByGenre(String genre){ return  movieEntityRepository.findByGenre(genre);};
-
+//    Inicialmente quise configurar el circuit breaker para los metodos utilizados dentro de este metodo
+//    para que la caída de 1 solo servicio no afectara al otro, sin embargo no pude hacer que funcione el
+//    fallback de cada metodo (ni siquiera entraba al metodo de fallback). Aun así, dejé el código y los
+//    metodos comentados.
+//    Finalmente opté por configurarlo en este metodo, de manera que, por ejemplo, el servicio de series no
+//    se encuentre disponible, el metodo consultará el server de movies y luego el de series, y al ver que
+//    series no se encuentra disponible, consultará su propia base de datos para ambos metodos, descartando el
+//    resultado de movies también.
+    @Retry(name = "retryMovies")
+    @CircuitBreaker(name = "clientMovies", fallbackMethod = "getByGenreOnlineFallback")
     public GetByGenreResponse getByGenreOnline(String genre){
         GetByGenreResponse getByGenreResponse = new GetByGenreResponse();
         findAllMoviesByGenre(genre,getByGenreResponse);
@@ -47,72 +54,20 @@ public class CatalogService {
         return getByGenreResponse;
     }
 
-    @Retry(name = "retryMovie")
-    @CircuitBreaker(name = "clientMovie", fallbackMethod = "findAllMoviesByGenreFallBack")
-    private void findAllMoviesByGenre(String genre, GetByGenreResponse response) {
-        response.setMovies(movieServiceClient.getMovieByGenre(genre));
-    }
-    private void findAllMoviesByGenreFallBack(String genre, GetByGenreResponse response, Throwable t) {
-        GetByGenreResponse getByGenreResponse = new GetByGenreResponse();
-        List<MovieDTO> movies = new ArrayList<>();
-        MovieDTO movieDTO = new MovieDTO();
-//
-        for (MovieEntity m: movieEntityRepository.findByGenre(genre)
-        ) {
-            BeanUtils.copyProperties(m, movieDTO);
-            movies.add(movieDTO);
-        }
-
-        response.setMovies(movies);
-    }
-
-    @Retry(name = "retrySeries")
-    @CircuitBreaker(name = "clientSeries", fallbackMethod = "findAllSeriesByGenreFallBack")
-    private void findAllSeriesByGenre(String genre, GetByGenreResponse response) {
-        response.setSeries(seriesServiceClient.getSeriesByGenre(genre));
-    }
-
-    private void findAllSeriesByGenreFallBack(String genre, GetByGenreResponse response, Throwable t) {
-        List<SeriesDTO> series = new ArrayList<>();
-        SeriesDTO seriesDTO = new SeriesDTO();
-
-        for (SeriesEntity s : seriesEntityRepository.findByGenre(genre)){
-
-            for (SeasonEntity s2 :
-                    s.getSeasons()) {
-                SeasonDTO sDTO = new SeasonDTO();
-
-                for (ChapterEntity c :
-                        s2.getChapters()) {
-                    ChapterDTO cDTO = new ChapterDTO();
-                    BeanUtils.copyProperties(c, cDTO);
-                    sDTO.getChapters().add(cDTO);
-                }
-                BeanUtils.copyProperties(s2, sDTO);
-                seriesDTO.getSeasons().add(sDTO);
-            }
-            BeanUtils.copyProperties(s, seriesDTO);
-            series.add(seriesDTO);
-        }
-
-        response.setSeries(series);
-    }
-
     public GetByGenreResponse getByGenreOffline(String genre){
         GetByGenreResponse getByGenreResponse = new GetByGenreResponse();
         List<MovieDTO> movies = new ArrayList<>();
         List<SeriesDTO> series = new ArrayList<>();
 
-        MovieDTO movieDTO = new MovieDTO();
-
         for (MovieEntity m: movieEntityRepository.findByGenre(genre)
              ) {
+            MovieDTO movieDTO = new MovieDTO();
             BeanUtils.copyProperties(m, movieDTO);
             movies.add(movieDTO);
         }
-        SeriesDTO seriesDTO = new SeriesDTO();
-        for (SeriesEntity s : seriesEntityRepository.findByGenre(genre)){
 
+        for (SeriesEntity s : seriesEntityRepository.findByGenre(genre)){
+            SeriesDTO seriesDTO = new SeriesDTO();
             for (SeasonEntity s2 :
                     s.getSeasons()) {
                 SeasonDTO sDTO = new SeasonDTO();
@@ -132,8 +87,99 @@ public class CatalogService {
 
         getByGenreResponse.setMovies(movies);
         getByGenreResponse.setSeries(series);
+
+        return getByGenreResponse;
+
+    }
+    public GetByGenreResponse getByGenreOnlineFallback(String genre, Throwable t){
+        GetByGenreResponse getByGenreResponse = new GetByGenreResponse();
+        List<MovieDTO> movies = new ArrayList<>();
+        List<SeriesDTO> series = new ArrayList<>();
+
+        for (MovieEntity m: movieEntityRepository.findByGenre(genre)
+             ) {
+            MovieDTO movieDTO = new MovieDTO();
+            BeanUtils.copyProperties(m, movieDTO);
+            movies.add(movieDTO);
+        }
+
+        for (SeriesEntity s : seriesEntityRepository.findByGenre(genre)){
+            SeriesDTO seriesDTO = new SeriesDTO();
+            for (SeasonEntity s2 :
+                    s.getSeasons()) {
+                SeasonDTO sDTO = new SeasonDTO();
+
+                for (ChapterEntity c :
+                        s2.getChapters()) {
+                    ChapterDTO cDTO = new ChapterDTO();
+                    BeanUtils.copyProperties(c, cDTO);
+                    sDTO.getChapters().add(cDTO);
+                }
+                BeanUtils.copyProperties(s2, sDTO);
+                seriesDTO.getSeasons().add(sDTO);
+            }
+            BeanUtils.copyProperties(s, seriesDTO);
+            series.add(seriesDTO);
+        }
+
+        getByGenreResponse.setMovies(movies);
+        getByGenreResponse.setSeries(series);
+
         return getByGenreResponse;
 
     }
 
-}
+    //    @Retry(name = "retrySeries")
+    //    @CircuitBreaker(name = "clientSeries", fallbackMethod = "findAllSeriesByGenreFallBack")
+    public void findAllSeriesByGenre(String genre, GetByGenreResponse response) {
+        response.setSeries(seriesServiceClient.getSeriesByGenre(genre));
+    }
+
+    //    @Retry(name = "retryMovies")
+    //    @CircuitBreaker(name = "clientMovies", fallbackMethod = "findAllMoviesByGenreFallBack")
+    public void findAllMoviesByGenre(String genre, GetByGenreResponse response) {
+        response.setMovies(movieServiceClient.getMovieByGenre(genre));
+    }
+    //    public void findAllMoviesByGenreFallBack(String genre, GetByGenreResponse response, Throwable t) {
+    //
+    //        List<MovieDTO> movies = new ArrayList<>();
+    //
+    //        for (MovieEntity m: movieEntityRepository.findByGenre(genre)
+    //        ) {
+    //            MovieDTO movieDTO = new MovieDTO();
+    //            BeanUtils.copyProperties(m, movieDTO);
+    //            movies.add(movieDTO);
+    //        }
+    //        response.setMovies(movies);
+    //
+    //    }
+
+
+
+    //    public List<SeriesDTO> findAllSeriesByGenreFallBack(String genre, GetByGenreResponse response, Throwable t) {
+    //        List<SeriesDTO> series = new ArrayList<>();
+    //
+    //        for (SeriesEntity s : seriesEntityRepository.findByGenre(genre)){
+    //            SeriesDTO seriesDTO = new SeriesDTO();
+    //            for (SeasonEntity s2 :
+    //                    s.getSeasons()) {
+    //                SeasonDTO sDTO = new SeasonDTO();
+    //
+    //                for (ChapterEntity c :
+    //                        s2.getChapters()) {
+    //                    ChapterDTO cDTO = new ChapterDTO();
+    //                    BeanUtils.copyProperties(c, cDTO);
+    //                    sDTO.getChapters().add(cDTO);
+    //                }
+    //                BeanUtils.copyProperties(s2, sDTO);
+    //                seriesDTO.getSeasons().add(sDTO);
+    //            }
+    //            BeanUtils.copyProperties(s, seriesDTO);
+    //            series.add(seriesDTO);
+    //        }
+    //
+    //        response.setSeries(series);
+    //        return response.getSeries();
+    //    }
+
+    }

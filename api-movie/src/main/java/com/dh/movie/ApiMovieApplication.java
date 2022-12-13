@@ -17,7 +17,6 @@ public class ApiMovieApplication {
         SpringApplication.run(ApiMovieApplication.class, args);
     }
 
-
     @Bean
     public CommandLineRunner loadData(MovieRepository repository) {
         return (args) -> {

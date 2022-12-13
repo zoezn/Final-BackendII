@@ -19,12 +19,13 @@ public class SeriesController {
     }
 
     @GetMapping("/{genre}")
-    ResponseEntity<List<Series>> getMovieByGenre(@PathVariable String genre) {
-        return ResponseEntity.ok().body(seriesService.findByGenre(genre));
+    ResponseEntity<List<Series>> getSeriesByGenre(@PathVariable String genre) {
+       return ResponseEntity.ok().body(seriesService.findByGenre(genre));
+
     }
 
     @PostMapping("/save")
-    ResponseEntity<Series> saveMovie(@RequestBody Series series) {
+    ResponseEntity<Series> saveSerie(@RequestBody Series series) {
         return ResponseEntity.ok().body(seriesService.save(series));
     }
 }
